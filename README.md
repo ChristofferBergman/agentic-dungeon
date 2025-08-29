@@ -7,7 +7,7 @@ To run it you need some prerequisites:
 You need a Neo4j instance. You can setup an Aura instance in the cloud, and an Aura Free instance is sufficient:
 https://neo4j.com/product/auradb/
 
-In the Query window of Aura (where you can run Cypher queries directly), run this query to load the initial setup of the game:
+In the Query window of Aura (where you can run Cypher queries directly), run this query to load the initial setup of the game:<br>
 CREATE (r:Room:Original:Start {name: "Porch", description: "You find yourself standing on the creaking wooden porch of an enormous, ancient castle, its weathered stone walls looming ominously in the misty twilight. Before you rises a towering wooden door, dark and heavy with age, its iron hinges rusted and ornate carvings half-faded by time, as though guarding secrets long buried within the castle's shadowed halls.", position: Point({x: 0, y: 0})})
 CREATE (r2:Room:Original {name: "", description: "", position: Point({x: 0, y: 1})})
 CREATE (r)-[:DOOR {direction: "N"}]->(r2)
