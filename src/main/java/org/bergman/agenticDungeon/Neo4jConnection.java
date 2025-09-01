@@ -50,48 +50,18 @@ public class Neo4jConnection {
 				MATCH (player)-[:IN]->(room:Room)
 				WITH room, room.position AS pos
 				WITH room,
-				  point({x: pos.x, y: pos.y + 1}) AS north,
-				  point({x: pos.x, y: pos.y - 1}) AS south,
-				  point({x: pos.x - 1, y: pos.y}) AS west,
-				  point({x: pos.x + 1, y: pos.y}) AS east,
 				  (CASE WHEN room.name IS NOT NULL AND room.name <> "" THEN true
 				        WHEN room.description IS NOT NULL AND room.description <> "" THEN true
-				        ELSE false END) AS hasContent
-
-				CALL(room) {
-				  MATCH (room)-[:DOOR {direction: "N"}]->(:Room)
-				  RETURN COUNT(*) > 0 AS hasDoorN
-				}
-				CALL(room) {
-				  MATCH (room)-[:DOOR {direction: "S"}]->(:Room)
-				  RETURN COUNT(*) > 0 AS hasDoorS
-				}
-				CALL(room) {
-				  MATCH (room)-[:DOOR {direction: "W"}]->(:Room)
-				  RETURN COUNT(*) > 0 AS hasDoorW
-				}
-				CALL(room) {
-				  MATCH (room)-[:DOOR {direction: "E"}]->(:Room)
-				  RETURN COUNT(*) > 0 AS hasDoorE
-				}
-
-				CALL(north) {
-				  OPTIONAL MATCH (nRoom:Room) WHERE nRoom.position = north
-				  RETURN COUNT(nRoom) > 0 AS existsN
-				}
-				CALL(south) {
-				  OPTIONAL MATCH (sRoom:Room) WHERE sRoom.position = south
-				  RETURN COUNT(sRoom) > 0 AS existsS
-				}
-				CALL(west) {
-				  OPTIONAL MATCH (wRoom:Room) WHERE wRoom.position = west
-				  RETURN COUNT(wRoom) > 0 AS existsW
-				}
-				CALL(east) {
-				  OPTIONAL MATCH (eRoom:Room) WHERE eRoom.position = east
-				  RETURN COUNT(eRoom) > 0 AS existsE
-				}
-
+				        ELSE false END) AS hasContent,
+				  EXISTS{(room)-[:DOOR {direction: "N"}]->(:Room)} AS hasDoorN,
+				  EXISTS{(room)-[:DOOR {direction: "S"}]->(:Room)} AS hasDoorS,
+				  EXISTS{(room)-[:DOOR {direction: "W"}]->(:Room)} AS hasDoorW,
+				  EXISTS{(room)-[:DOOR {direction: "E"}]->(:Room)} AS hasDoorE,
+				  EXISTS{(:Room {position: point({x: pos.x, y: pos.y + 1})})} AS existsN,
+				  EXISTS{(:Room {position: point({x: pos.x, y: pos.y - 1})})} AS existsS,
+				  EXISTS{(:Room {position: point({x: pos.x - 1, y: pos.y})})} AS existsW,
+				  EXISTS{(:Room {position: point({x: pos.x + 1, y: pos.y})})} AS existsE
+				
 				RETURN room
 				{
 				  .name,
