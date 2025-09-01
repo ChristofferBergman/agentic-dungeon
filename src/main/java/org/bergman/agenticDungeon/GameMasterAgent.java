@@ -121,7 +121,7 @@ public class GameMasterAgent {
 		return aiBuilder
 				.withShowPrompts(true)
 				.ai()
-				.withLlm(LlmOptions.withDefaultLlm().withTemperature(null))
+				.withLlm(LlmOptions.withDefaultLlm().withTemperature(0.8))
 				.withToolObject(this)
 				.respond(conversation.getMessages());
 	}
