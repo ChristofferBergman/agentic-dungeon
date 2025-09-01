@@ -57,10 +57,10 @@ public class Neo4jConnection {
 				  EXISTS{(room)-[:DOOR {direction: "S"}]->(:Room)} AS hasDoorS,
 				  EXISTS{(room)-[:DOOR {direction: "W"}]->(:Room)} AS hasDoorW,
 				  EXISTS{(room)-[:DOOR {direction: "E"}]->(:Room)} AS hasDoorE,
-				  EXISTS{(:Room {position: point({x: pos.x, y: pos.y + 1})})} AS existsN,
-				  EXISTS{(:Room {position: point({x: pos.x, y: pos.y - 1})})} AS existsS,
-				  EXISTS{(:Room {position: point({x: pos.x - 1, y: pos.y})})} AS existsW,
-				  EXISTS{(:Room {position: point({x: pos.x + 1, y: pos.y})})} AS existsE
+				  EXISTS{(r:Room {position: point({x: pos.x, y: pos.y + 1})}) WHERE r.name <> ""} AS existsN,
+				  EXISTS{(r:Room {position: point({x: pos.x, y: pos.y - 1})}) WHERE r.name <> ""} AS existsS,
+				  EXISTS{(r:Room {position: point({x: pos.x - 1, y: pos.y})}) WHERE r.name <> ""} AS existsW,
+				  EXISTS{(r:Room {position: point({x: pos.x + 1, y: pos.y})}) WHERE r.name <> ""} AS existsE
 				
 				RETURN room
 				{
@@ -173,9 +173,10 @@ public class Neo4jConnection {
 					    WHEN door = "S" THEN "N"
 					    WHEN door = "W" THEN "E"
 					    ELSE "W" END AS revDir
-				CREATE (newRoom:Room {name: "", description: "", position: newPos})
-				CREATE (room)-[:DOOR {direction: door}]->(newRoom)
-				CREATE (newRoom)-[:DOOR {direction: revDir}]->(room)
+				MERGE (newRoom:Room {position: newPos})
+				ON CREATE SET newRoom.name = "", newRoom.description = ""
+				MERGE (room)-[:DOOR {direction: door}]->(newRoom)
+				MERGE (newRoom)-[:DOOR {direction: revDir}]->(room)
 				""",
 				Map.of("player", player, "name", name, "description", description, "doors", doors));
 
